@@ -84,3 +84,4 @@ cd ~ ; ls -l > list
 
 #чтобы изменить стандартный shell нужно прописать в консоли:#chsh -s /usr/bin/"nameshell"
 
+https://tldp.org/LDP/Bash-Beginners-Guide/html/sect_07_01.html
