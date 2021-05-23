@@ -1,5 +1,5 @@
-#include "../Magma/Magma.h" // меняешь на свои пути
-#include "/home/alex/gtest/include/gtest/gtest.h"  // меняешь на свои пути
+#include "../Magma/Magma.h"
+#include "/home/alex/gtest/include/gtest/gtest.h"
 /*********************************************************/
 uint32_t gFunc(uint32_t key, uint32_t halfBlock)
 {
@@ -7,7 +7,7 @@ uint32_t gFunc(uint32_t key, uint32_t halfBlock)
     return (result & 0b11111111111<<21)>>21 | result<<11;
 }
 /*********************************************************/
-TEST(Basic_Cipher, S_Box)
+TEST(ECB, S_Box)
 {
     EXPECT_EQ(S_box(0xFDB97531), 0x2A196F34);
     EXPECT_EQ(S_box(0x2A196F34), 0xEBD9F03A);
@@ -15,7 +15,7 @@ TEST(Basic_Cipher, S_Box)
     EXPECT_EQ(S_box(0xB039BB3D), 0x68695433);
 }
 /*********************************************************/
-TEST(Basic_Cipher, gFunction)
+TEST(ECB, gFunction)
 //проверка g[k] - отображения. В данном случае - части кода.
 {
     EXPECT_EQ(gFunc(0x87654321, 0xFEDCBA98), 0xFDCBC20C);
@@ -24,7 +24,7 @@ TEST(Basic_Cipher, gFunction)
     EXPECT_EQ(gFunc(0xC76549EC, 0x7E791A4B), 0x9791C849);
 }
 /*********************************************************/
-TEST(Basic_Cipher, CreateEncryptKeys)
+TEST(ECB, CreateEncryptKeys)
 {
     uint32_t key[8]={0xFCFDFEFF, 0xF8F9FAFB, 0xF4F5F6F7, 0xF0F1F2F3, 0x33221100, 0x77665544, 0xBBAA9988, 0xFFEEDDCC};
     uint32_t iterationKeys[32];
@@ -39,7 +39,7 @@ TEST(Basic_Cipher, CreateEncryptKeys)
     }
 }
 /*********************************************************/
-TEST(Basic_Cipher, CreateDecryptKeys)
+TEST(ECB, CreateDecryptKeys)
 {
     uint32_t key[8]={0xFCFDFEFF, 0xF8F9FAFB, 0xF4F5F6F7, 0xF0F1F2F3, 0x33221100, 0x77665544, 0xBBAA9988, 0xFFEEDDCC};
     uint32_t iterationKeys[32];
@@ -54,7 +54,7 @@ TEST(Basic_Cipher, CreateDecryptKeys)
     }
 }
 /*********************************************************/
-TEST(Basic_Cipher, SchemeFeistelEncryption)
+TEST(ECB, SchemeFeistelEncryption)
 {
     uint32_t leftAndRightPart[2] = {0x76543210, 0xFEDCBA98}; // 0 - rightPart, 1 - leftPart 
     EXPECT_EQ(leftAndRightPart[0],0x76543210 );
@@ -192,7 +192,7 @@ TEST(Basic_Cipher, SchemeFeistelEncryption)
     ASSERT_EQ(*((uint64_t*)leftAndRightPart), 0x4ee901e5c2d8ca3d);
 }
 /*********************************************************/
-TEST(Basic_Cipher, SchemeFeistelDecryption)
+TEST(ECB, SchemeFeistelDecryption)
 {
     uint32_t leftAndRightPart[2] = {0xc2d8ca3d, 0x4ee901e5}; // 0 - rightPart, 1 - leftPart 
     uint32_t key[8]={0xFCFDFEFF, 0xF8F9FAFB, 0xF4F5F6F7, 0xF0F1F2F3, 0x33221100, 0x77665544, 0xBBAA9988, 0xFFEEDDCC};
@@ -328,7 +328,7 @@ TEST(Basic_Cipher, SchemeFeistelDecryption)
     ASSERT_EQ(*((uint64_t*)leftAndRightPart), 0xfedcba9876543210);
 }
 /*********************************************************/
-TEST(Basic_Cipher, SchemeFeistelEncryption2)
+TEST(ECB, SchemeFeistelEncryption2)
 {
     uint64_t block = 0xFEDCBA9876543210; // 0 - rightPart, 1 - leftPart 
     uint32_t key[8]={0xFCFDFEFF, 0xF8F9FAFB, 0xF4F5F6F7, 0xF0F1F2F3, 0x33221100, 0x77665544, 0xBBAA9988, 0xFFEEDDCC};
@@ -338,7 +338,7 @@ TEST(Basic_Cipher, SchemeFeistelEncryption2)
     EXPECT_EQ(schemeFeistel(block, ptrOnArrKeys), 0x4ee901e5c2d8ca3d);
 }
 /*********************************************************/
-TEST(Basic_Cipher, SchemeFeistelDecryption2)
+TEST(ECB, SchemeFeistelDecryption2)
 {
     uint64_t block = 0x4ee901e5c2d8ca3d; // 0 - rightPart, 1 - leftPart 
     uint32_t key[8]={0xFCFDFEFF, 0xF8F9FAFB, 0xF4F5F6F7, 0xF0F1F2F3, 0x33221100, 0x77665544, 0xBBAA9988, 0xFFEEDDCC};
@@ -348,7 +348,7 @@ TEST(Basic_Cipher, SchemeFeistelDecryption2)
     EXPECT_EQ(schemeFeistel(block, ptrOnArrKeys),  0xFEDCBA9876543210);
 }
 /*********************************************************/
-TEST(ecb, ProcPaddingNulls)
+TEST(ECB, ProcPaddingNulls)
 {
     uint64_t block = 0x1234567890; //5 - bytes
     EXPECT_EQ(procPaddingNulls((uint8_t*)&block, 3, PROC_ADD_NULLS_1), 0x0000001234567890);
@@ -356,7 +356,7 @@ TEST(ecb, ProcPaddingNulls)
     EXPECT_EQ(procPaddingNulls((uint8_t*)&block, 8, PROC_ADD_NULLS_2), 0x0000000000000001);
 }
 /*********************************************************/
-TEST(ecb, CountBytesForWrite)
+TEST(ECB, CountBytesForWrite)
 {
     uint64_t block = 0x0000011234567890; //5 - bytes
     EXPECT_EQ(countBytesForWrite((uint8_t*)&block), 5);
@@ -366,7 +366,7 @@ TEST(ecb, CountBytesForWrite)
     EXPECT_EQ(countBytesForWrite((uint8_t*)&block), 5);
 }
 /*********************************************************/
-TEST(ecb, CipherECB_proc_added_nulls_1_full_block)
+TEST(ECB, CipherECB_proc_added_nulls_1_full_block)
 {
 
     char nameInputFile[] = "OpenText.txt";
@@ -411,7 +411,7 @@ TEST(ecb, CipherECB_proc_added_nulls_1_full_block)
     fclose(openText);
 }
 /*********************************************************/
-TEST(ecb, CipherECB_proc_added_nulls_1_not_full_block)
+TEST(ECB, CipherECB_proc_added_nulls_1_not_full_block)
 {
 
     char nameInputFile[] = "OpenText.txt";
@@ -464,7 +464,7 @@ TEST(ecb, CipherECB_proc_added_nulls_1_not_full_block)
     fclose(openText);
 }
 /*********************************************************/
-TEST(ecb, CipherECB_proc_added_nulls_2_not_full_block)
+TEST(ECB, CipherECB_proc_added_nulls_2_not_full_block)
 {
 
     char nameInputFile[] = "OpenText.txt";
@@ -516,7 +516,7 @@ TEST(ecb, CipherECB_proc_added_nulls_2_not_full_block)
     fclose(openText);
 }
 /*********************************************************/
-TEST(ecb, CipherECB_proc_added_nulls_2_full_block)
+TEST(ECB, CipherECB_proc_added_nulls_2_full_block)
 {
 
     char nameInputFile[] = "OpenText.txt";
@@ -561,7 +561,7 @@ TEST(ecb, CipherECB_proc_added_nulls_2_full_block)
     fclose(openText);
 }
 /*********************************************************/
-TEST(ecb, SPEED_ENCRYPTION_MODE)
+TEST(ECB, SPEED_ENCRYPTION_MODE)
 {
     char nameInputFile[] = "OpenText.txt";
     char nameOutputFile[] = "CipherText.txt";
@@ -569,7 +569,7 @@ TEST(ecb, SPEED_ENCRYPTION_MODE)
     EncryptECB(nameInputFile, nameOutputFile, key, PROC_ADD_NULLS_2);
 }
 /*********************************************************/
-TEST(ecb, SPEED_DECRYPTION_MODE)
+TEST(ECB, SPEED_DECRYPTION_MODE)
 {
     char nameInputFile[] = "OpenText.txt";
     char nameOutputFile[] = "CipherText.txt";
@@ -577,7 +577,7 @@ TEST(ecb, SPEED_DECRYPTION_MODE)
     DecryptECB(nameOutputFile, nameInputFile, key, PROC_ADD_NULLS_2, 0);
 }
 /*********************************************************/
-TEST(ecb, SmallTest1)
+TEST(ECB, SmallTest1)
 {
     char nameInputFile[] = "OpenText.txt";
     char nameOutputFile[] = "CipherText.txt";
@@ -612,7 +612,7 @@ TEST(ecb, SmallTest1)
     fclose(openText);
 }
 /*********************************************************/
-TEST(ecb, SmallTest2)
+TEST(ECB, SmallTest2)
 {
     char nameInputFile[] = "OpenText.txt";
     char nameOutputFile[] = "CipherText.txt";
@@ -647,7 +647,7 @@ TEST(ecb, SmallTest2)
     fclose(openText);
 }
 /*********************************************************/
-TEST(ecb, SmallTest3)
+TEST(ECB, SmallTest3)
 {
     char nameInputFile[] = "OpenText.txt";
     char nameOutputFile[] = "CipherText.txt";
@@ -682,7 +682,7 @@ TEST(ecb, SmallTest3)
     fclose(openText);
 }
 /*********************************************************/
-TEST(ecb, SmallTest4)
+TEST(ECB, SmallTest4)
 {
     char nameInputFile[] = "OpenText.txt";
     char nameOutputFile[] = "CipherText.txt";
@@ -717,7 +717,7 @@ TEST(ecb, SmallTest4)
     fclose(openText);
 }
 /*********************************************************/
-TEST(imito, CreateHelpingKey)
+TEST(IMITO, CreateHelpingKey)
 {
     uint32_t key[8]={0xFCFDFEFF, 0xF8F9FAFB, 0xF4F5F6F7, 0xF0F1F2F3, 0x33221100, 0x77665544, 0xBBAA9988, 0xFFEEDDCC};
     uint32_t ptrOnArrKeys[32];
@@ -725,7 +725,7 @@ TEST(imito, CreateHelpingKey)
     EXPECT_EQ(createHelpingKey(ptrOnArrKeys,CREATE_KEY_1), 0x5f459b3342521424);
 }
 /*********************************************************/
-TEST(imito, GetMAC)
+TEST(IMITO, GetMAC)
 {
     char nameInputFile[] = "OpenText.txt";
     //create open text
