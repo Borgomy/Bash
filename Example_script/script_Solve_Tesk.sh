@@ -37,10 +37,8 @@ do
 	cd Key.$numberKey
 	touch key.key
 	
-	if createKey key.key
-	then echo 'createKey +'
-	else echo 'createKey -' ; exit
-	fi 
+	createKey key.key
+ 
 	
 	./../Magma.exe -i ../Key.$(($numberKey-1)) -k key.key -c d -o ../Key.$(($numberKey-1)).tar
 	if [[ $? -eq 0 ]]
