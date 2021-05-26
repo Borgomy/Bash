@@ -1,0 +1,14 @@
+#!/bin/bash
+
+var0=0
+LIMIT=$1
+
+while [ "$var0" -lt "$LIMIT" ]
+do
+  echo -n "$var0 " # -n подавляет перевод строки.
+  ((var0+=1))
+done
+
+echo
+# Вывод чисел от 0 до параметра
+exit 0
